@@ -1,6 +1,7 @@
 ---
 import fs from 'node:fs';
 import path from 'node:path';
+import { withBase } from '../i18n/utils';
 
 interface Props {
   src: string;
@@ -12,16 +13,19 @@ interface Props {
 
 const { src, alt = '', aspect = '4/3', class: className = '', sizes } = Astro.props;
 
-// Check at build time whether a real file has been dropped in at this path.
-// If it has, render the image; if not, render a labelled placeholder so the
-// owner can see exactly what filename to add (and where).
-const publicPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''));
+// Frontmatter `src` is always site-root-relative (e.g. `/images/hero.jpg`) and
+// does NOT include the deployment base path. We check existence against the
+// local `public/` folder, and render with the base prefix so the browser
+// resolves the right URL on both dev (`/`) and production (`/TH-website/`).
+const publicRelative = src.replace(/^\//, '');
+const publicPath = path.join(process.cwd(), 'public', publicRelative);
 const exists = fs.existsSync(publicPath);
+const resolvedSrc = withBase(src);
 ---
 
 {exists ? (
   <img
-    src={src}
+    src={resolvedSrc}
     alt={alt}
     loading="lazy"
     decoding="async"

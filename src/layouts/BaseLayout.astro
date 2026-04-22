@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { localeNames, type Locale } from '../i18n/ui';
-import { localePath } from '../i18n/utils';
+import { localePath, withBase } from '../i18n/utils';
 
 interface Props {
   locale: Locale;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { locale, title, description } = Astro.props;
-const siteUrl = Astro.site?.toString() ?? '';
+const siteOrigin = Astro.site?.origin ?? '';
 ---
 <!doctype html>
 <html lang={locale}>
@@ -25,9 +25,9 @@ const siteUrl = Astro.site?.toString() ?? '';
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={locale} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     {Object.keys(localeNames).map((l) => (
-      <link rel="alternate" hreflang={l} href={`${siteUrl}${localePath(l as Locale).replace(/^\//, '')}`} />
+      <link rel="alternate" hreflang={l} href={`${siteOrigin}${localePath(l as Locale)}`} />
     ))}
   </head>
   <body class="min-h-screen flex flex-col">
