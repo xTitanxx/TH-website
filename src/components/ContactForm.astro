@@ -1,0 +1,81 @@
+---
+import { t } from '../i18n/utils';
+import type { Locale } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const s = t(locale);
+
+const endpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT ?? '';
+const email = import.meta.env.PUBLIC_CONTACT_EMAIL ?? '';
+const wa = import.meta.env.PUBLIC_WHATSAPP_NUMBER ?? '';
+
+const waHref = wa ? `https://wa.me/${wa}` : '';
+const mailHref = email ? `mailto:${email}` : '';
+---
+<form
+  method="POST"
+  action={endpoint || undefined}
+  class="grid gap-4 max-w-xl"
+  data-endpoint-configured={endpoint ? 'true' : 'false'}
+>
+  {!endpoint && (
+    <p class="text-xs rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
+      Set <code>PUBLIC_FORMSPREE_ENDPOINT</code> in <code>.env</code> to activate the form.
+    </p>
+  )}
+
+  <label class="grid gap-1 text-sm">
+    <span>{s.contact.name}</span>
+    <input type="text" name="name" required autocomplete="name"
+           class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+  </label>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="grid gap-1 text-sm">
+      <span>{s.contact.email}</span>
+      <input type="email" name="email" required autocomplete="email"
+             class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+    </label>
+    <label class="grid gap-1 text-sm">
+      <span>{s.contact.phone}</span>
+      <input type="tel" name="phone" autocomplete="tel"
+             class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+    </label>
+  </div>
+
+  <label class="grid gap-1 text-sm">
+    <span>{s.contact.dates}</span>
+    <input type="text" name="dates" placeholder="—"
+           class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+  </label>
+
+  <label class="grid gap-1 text-sm">
+    <span>{s.contact.message}</span>
+    <textarea name="message" rows="5" required
+              class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2"></textarea>
+  </label>
+
+  {/* Honeypot (hidden from humans, bots fill it). */}
+  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off"
+         class="hidden" aria-hidden="true" />
+
+  <div class="flex flex-wrap gap-3 items-center pt-2">
+    <button type="submit"
+            class="rounded bg-[color:var(--color-indigo-700)] text-white px-5 py-2.5 text-sm hover:bg-[color:var(--color-indigo-900)] transition-colors">
+      {s.contact.send}
+    </button>
+    {waHref && (
+      <a href={waHref} target="_blank" rel="noopener"
+         class="rounded border border-[color:var(--color-indigo-300)] text-[color:var(--color-indigo-700)] px-5 py-2.5 text-sm hover:bg-[color:var(--color-indigo-50)]">
+        {s.contact.whatsapp}
+      </a>
+    )}
+    {mailHref && (
+      <a href={mailHref}
+         class="text-sm underline underline-offset-4 text-[color:var(--color-indigo-700)]">
+        {s.contact.emailUs}
+      </a>
+    )}
+  </div>
+</form>

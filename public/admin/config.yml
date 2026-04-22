@@ -1,0 +1,102 @@
+# Decap CMS configuration.
+#
+# LOCAL EDITING (works immediately):
+#   Terminal 1: npm run cms     (starts the Decap proxy on :8081)
+#   Terminal 2: npm run dev     (Astro dev server on :4321)
+#   Visit http://localhost:4321/admin/ — no login, edits go straight to the filesystem.
+#
+# EDITING ON THE DEPLOYED SITE (optional, one-time setup):
+#   See README.md → "Editing on the deployed site". You'll deploy a tiny OAuth
+#   proxy (Cloudflare Worker, free) and fill in `backend.base_url` below.
+
+local_backend: true
+
+backend:
+  name: github
+  # TODO: set to "<github-username>/<repo-name>" before deploying to live editing.
+  repo: owner/repo
+  branch: main
+  # Uncomment once your OAuth proxy is deployed (see README):
+  # base_url: https://decap-oauth.<your-subdomain>.workers.dev
+
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+logo_url: /favicon.svg
+site_url: /
+display_url: /
+
+# Every locale gets its own collection. Edit the locale you need and the
+# homepage at that URL updates automatically at build time.
+# The field set is shared; only the folder differs.
+
+collections:
+  - name: sections-en
+    label: "Sections · English"
+    folder: "src/content/sections/en"
+    format: "frontmatter"
+    extension: "md"
+    identifier_field: title
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    fields: &section_fields
+      - { name: title, label: Title, widget: string }
+      - { name: eyebrow, label: Eyebrow, hint: "Small uppercase label above the title.", widget: string, required: false }
+      - { name: tagline, label: Tagline, hint: "Hero only — subtitle under the big headline.", widget: string, required: false }
+      - { name: body, label: Body, widget: markdown, required: false }
+      - name: images
+        label: Images
+        widget: list
+        required: false
+        summary: "{{fields.src}}"
+        fields:
+          - { name: src, label: Image, widget: image }
+          - { name: alt, label: Alt text, widget: string, hint: "Short screen-reader description." }
+          - { name: caption, label: Caption, widget: string, required: false }
+      - { name: gmaps, label: Google Maps URL, hint: "Location only.", widget: string, required: false }
+      - { name: amaps, label: Apple Maps URL, hint: "Location only.", widget: string, required: false }
+
+  - name: sections-pt
+    label: "Sections · Português"
+    folder: "src/content/sections/pt"
+    format: "frontmatter"
+    extension: "md"
+    identifier_field: title
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    fields: *section_fields
+
+  - name: sections-fr
+    label: "Sections · Français"
+    folder: "src/content/sections/fr"
+    format: "frontmatter"
+    extension: "md"
+    identifier_field: title
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    fields: *section_fields
+
+  - name: sections-de
+    label: "Sections · Deutsch"
+    folder: "src/content/sections/de"
+    format: "frontmatter"
+    extension: "md"
+    identifier_field: title
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    fields: *section_fields
+
+  - name: sections-es
+    label: "Sections · Español"
+    folder: "src/content/sections/es"
+    format: "frontmatter"
+    extension: "md"
+    identifier_field: title
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    fields: *section_fields

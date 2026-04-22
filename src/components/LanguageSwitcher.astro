@@ -1,0 +1,26 @@
+---
+import { locales, localeNames, type Locale } from '../i18n/ui';
+import { localePath } from '../i18n/utils';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+---
+<nav aria-label="Language" class="flex items-center gap-1 text-xs uppercase tracking-wider">
+  {locales.map((l, i) => (
+    <>
+      {i > 0 && <span aria-hidden="true" class="text-[color:var(--color-sand-300)]">·</span>}
+      <a
+        href={localePath(l)}
+        lang={l}
+        aria-current={l === locale ? 'true' : undefined}
+        class:list={[
+          'px-1 py-0.5 rounded',
+          l === locale
+            ? 'font-semibold text-[color:var(--color-indigo-700)]'
+            : 'text-[color:var(--color-sand-700)] hover:text-[color:var(--color-indigo-500)]',
+        ]}
+        title={localeNames[l]}
+      >{l}</a>
+    </>
+  ))}
+</nav>

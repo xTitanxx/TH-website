@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from './Section.astro';
+import Gallery from './Gallery.astro';
+import PlaceholderImage from './PlaceholderImage.astro';
+import ContactForm from './ContactForm.astro';
+import { getEntry, render } from 'astro:content';
+import { t } from '../i18n/utils';
+import type { Locale } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const s = t(locale);
+
+async function loadSection(slug: string) {
+  const entry = await getEntry('sections', `${locale}/${slug}`);
+  if (!entry) throw new Error(`Missing content: ${locale}/${slug}`);
+  const { Content } = await render(entry);
+  return { data: entry.data, Content };
+}
+
+const hero = await loadSection('hero');
+const house = await loadSection('house');
+const casa = await loadSection('casa-indigo');
+const studio = await loadSection('studio-indigo');
+const shop = await loadSection('shop');
+const aljezur = await loadSection('aljezur');
+const location = await loadSection('location');
+const contact = await loadSection('contact');
+
+const HouseBody = house.Content;
+const CasaBody = casa.Content;
+const StudioBody = studio.Content;
+const ShopBody = shop.Content;
+const AljezurBody = aljezur.Content;
+const LocationBody = location.Content;
+const ContactBody = contact.Content;
+
+const heroImage = hero.data.images?.[0];
+const title = `Casa & Studio Indigo — Aljezur, Algarve`;
+---
+<BaseLayout
+  locale={locale}
+  title={title}
+  description={hero.data.tagline ?? ''}
+>
+  <!-- HERO -->
+  <section id="top" class="relative overflow-hidden">
+    <div class="mx-auto max-w-6xl px-5 pt-16 md:pt-24 pb-16 md:pb-24 grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-end">
+      <div>
+        {hero.data.eyebrow && (
+          <p class="text-xs uppercase tracking-[0.2em] text-[color:var(--color-indigo-500)] mb-5">{hero.data.eyebrow}</p>
+        )}
+        <h1 class="font-serif text-4xl md:text-6xl leading-[1.05] text-[color:var(--color-sand-900)]">
+          {hero.data.title}
+        </h1>
+        {hero.data.tagline && (
+          <p class="mt-6 text-lg text-[color:var(--color-sand-700)] max-w-xl">{hero.data.tagline}</p>
+        )}
+        <div class="mt-8 flex gap-3 flex-wrap">
+          <a href="#casa" class="rounded bg-[color:var(--color-indigo-700)] text-white px-5 py-2.5 text-sm hover:bg-[color:var(--color-indigo-900)] transition-colors">{s.nav.casa}</a>
+          <a href="#studio" class="rounded border border-[color:var(--color-indigo-300)] text-[color:var(--color-indigo-700)] px-5 py-2.5 text-sm hover:bg-[color:var(--color-indigo-50)] transition-colors">{s.nav.studio}</a>
+          <a href="#contact" class="rounded border border-transparent text-[color:var(--color-indigo-700)] px-5 py-2.5 text-sm hover:underline underline-offset-4">{s.nav.contact} →</a>
+        </div>
+      </div>
+      {heroImage && (
+        <div class="overflow-hidden rounded">
+          <PlaceholderImage src={heroImage.src} alt={heroImage.alt} aspect="4/5" />
+        </div>
+      )}
+    </div>
+  </section>
+
+  <Section id="house" title={house.data.title} eyebrow={house.data.eyebrow}>
+    <HouseBody />
+    {house.data.images && house.data.images.length > 0 && (
+      <Gallery images={house.data.images} cols={2} aspect="16/10" />
+    )}
+  </Section>
+
+  <Section id="casa" title={casa.data.title} eyebrow={casa.data.eyebrow} tone="muted">
+    <CasaBody />
+    {casa.data.images && casa.data.images.length > 0 && (
+      <Gallery images={casa.data.images} cols={3} aspect="4/5" />
+    )}
+  </Section>
+
+  <Section id="studio" title={studio.data.title} eyebrow={studio.data.eyebrow}>
+    <StudioBody />
+    {studio.data.images && studio.data.images.length > 0 && (
+      <Gallery images={studio.data.images} cols={2} aspect="4/3" />
+    )}
+  </Section>
+
+  <Section id="shop" title={shop.data.title} eyebrow={shop.data.eyebrow} tone="muted">
+    <ShopBody />
+    {shop.data.images && shop.data.images.length > 0 && (
+      <Gallery images={shop.data.images} cols={3} aspect="1/1" />
+    )}
+  </Section>
+
+  <Section id="aljezur" title={aljezur.data.title} eyebrow={aljezur.data.eyebrow}>
+    <AljezurBody />
+    {aljezur.data.images && aljezur.data.images.length > 0 && (
+      <Gallery images={aljezur.data.images} cols={4} aspect="4/3" />
+    )}
+  </Section>
+
+  <Section id="location" title={location.data.title} eyebrow={location.data.eyebrow} tone="muted">
+    <div class="grid gap-10 md:grid-cols-[2fr_1fr] items-start">
+      <div class="overflow-hidden rounded">
+        {location.data.images?.[0] && (
+          <PlaceholderImage src={location.data.images[0].src} alt={location.data.images[0].alt} aspect="4/3" />
+        )}
+      </div>
+      <div class="space-y-5 text-sm">
+        <LocationBody />
+        <ul class="space-y-2 not-prose">
+          {location.data.gmaps && (
+            <li><a class="underline underline-offset-4" href={location.data.gmaps} target="_blank" rel="noopener">Google Maps ↗</a></li>
+          )}
+          {location.data.amaps && (
+            <li><a class="underline underline-offset-4" href={location.data.amaps} target="_blank" rel="noopener">Apple Maps ↗</a></li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <Section id="contact" title={contact.data.title} eyebrow={contact.data.eyebrow}>
+    <ContactBody />
+    <div class="mt-8">
+      <ContactForm locale={locale} />
+    </div>
+  </Section>
+</BaseLayout>

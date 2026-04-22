@@ -1,0 +1,26 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { t } from '../i18n/utils';
+import type { Locale } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const s = t(locale);
+---
+<header class="sticky top-0 z-20 bg-[color:var(--color-sand-50)]/85 backdrop-blur border-b border-[color:var(--color-sand-100)]">
+  <div class="mx-auto max-w-6xl px-5 h-14 flex items-center justify-between gap-4">
+    <a href="#top" class="font-serif text-lg tracking-tight">Casa &amp; Studio Indigo</a>
+    <nav aria-label="Sections" class="hidden md:block">
+      <ul class="flex gap-5 text-sm">
+        <li><a href="#house" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.house}</a></li>
+        <li><a href="#casa" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.casa}</a></li>
+        <li><a href="#studio" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.studio}</a></li>
+        <li><a href="#shop" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.shop}</a></li>
+        <li><a href="#aljezur" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.aljezur}</a></li>
+        <li><a href="#location" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.location}</a></li>
+        <li><a href="#contact" class="hover:text-[color:var(--color-indigo-700)]">{s.nav.contact}</a></li>
+      </ul>
+    </nav>
+    <LanguageSwitcher locale={locale} />
+  </div>
+</header>

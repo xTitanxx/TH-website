@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+
+  /* Indigo accent — placeholder values, to be confirmed against Valerie's interior palette. */
+  --color-indigo-50:  #eef0f7;
+  --color-indigo-100: #d6dbe9;
+  --color-indigo-300: #8791b8;
+  --color-indigo-500: #3a4475;
+  --color-indigo-700: #232c54;
+  --color-indigo-900: #141a38;
+
+  /* Warm neutral base — placeholder, to be tuned to photography. */
+  --color-sand-50:  #faf7f1;
+  --color-sand-100: #f3ede0;
+  --color-sand-300: #d6c9ae;
+  --color-sand-700: #5a4f3b;
+  --color-sand-900: #2a231a;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: var(--color-sand-900);
+  background: var(--color-sand-50);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-indigo-500);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

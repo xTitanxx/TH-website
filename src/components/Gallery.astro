@@ -1,0 +1,40 @@
+---
+import PlaceholderImage from './PlaceholderImage.astro';
+
+interface Image {
+  src: string;
+  alt?: string;
+  caption?: string;
+}
+
+interface Props {
+  images: Image[];
+  cols?: 1 | 2 | 3 | 4;
+  aspect?: string;
+  class?: string;
+}
+
+const { images, cols = 3, aspect = '4/3', class: className = '' } = Astro.props;
+
+const gridCols: Record<number, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-2 lg:grid-cols-4',
+};
+---
+
+{images && images.length > 0 && (
+  <div class:list={['grid gap-3 mt-10', gridCols[cols], className]}>
+    {images.map((img) => (
+      <figure class="overflow-hidden rounded">
+        <PlaceholderImage src={img.src} alt={img.alt} aspect={aspect} />
+        {img.caption && (
+          <figcaption class="mt-2 text-xs text-[color:var(--color-sand-700)]">
+            {img.caption}
+          </figcaption>
+        )}
+      </figure>
+    ))}
+  </div>
+)}

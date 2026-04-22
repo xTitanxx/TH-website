@@ -1,0 +1,48 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  src: string;
+  alt?: string;
+  aspect?: string;
+  class?: string;
+  sizes?: string;
+}
+
+const { src, alt = '', aspect = '4/3', class: className = '', sizes } = Astro.props;
+
+// Check at build time whether a real file has been dropped in at this path.
+// If it has, render the image; if not, render a labelled placeholder so the
+// owner can see exactly what filename to add (and where).
+const publicPath = path.join(process.cwd(), 'public', src.replace(/^\//, ''));
+const exists = fs.existsSync(publicPath);
+---
+
+{exists ? (
+  <img
+    src={src}
+    alt={alt}
+    loading="lazy"
+    decoding="async"
+    sizes={sizes}
+    class:list={['block w-full h-full object-cover', className]}
+    style={`aspect-ratio:${aspect}`}
+  />
+) : (
+  <div
+    role="img"
+    aria-label={`Placeholder for ${src}`}
+    class:list={[
+      'bg-[color:var(--color-sand-100)] border border-dashed border-[color:var(--color-sand-300)]',
+      'flex items-center justify-center p-4 text-center',
+      className,
+    ]}
+    style={`aspect-ratio:${aspect}`}
+  >
+    <span class="text-[11px] leading-tight font-mono text-[color:var(--color-sand-700)]">
+      drop image at<br /><span class="text-[color:var(--color-indigo-700)]">{src}</span>
+      {alt && <><br /><span class="opacity-60">alt: {alt}</span></>}
+    </span>
+  </div>
+)}

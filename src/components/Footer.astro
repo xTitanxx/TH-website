@@ -1,0 +1,26 @@
+---
+import { t } from '../i18n/utils';
+import { localePath } from '../i18n/utils';
+import type { Locale } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const s = t(locale);
+const year = new Date().getFullYear();
+
+// AL number: paste the registered Alojamento Local number here once confirmed.
+const AL_NUMBER = 'AL/XXXXX/AL';
+---
+<footer class="mt-24 border-t border-[color:var(--color-sand-100)] bg-[color:var(--color-sand-100)]/40">
+  <div class="mx-auto max-w-6xl px-5 py-10 flex flex-col md:flex-row gap-6 md:items-end md:justify-between text-sm">
+    <div class="space-y-1">
+      <p class="font-serif text-base">Casa &amp; Studio Indigo</p>
+      <p class="text-[color:var(--color-sand-700)]">Aljezur, Algarve, Portugal</p>
+      <p class="text-[color:var(--color-sand-700)]">{s.footer.al}: {AL_NUMBER}</p>
+    </div>
+    <div class="flex flex-wrap gap-5">
+      <a href={localePath(locale, 'privacy')} class="underline underline-offset-4 hover:text-[color:var(--color-indigo-700)]">{s.footer.privacy}</a>
+      <span class="text-[color:var(--color-sand-700)]">© {year}</span>
+    </div>
+  </div>
+</footer>
