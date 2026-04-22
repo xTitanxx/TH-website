@@ -1,20 +1,4 @@
 ---
-// The Decap CMS admin UI. It's a single-page app loaded from a CDN; the
-// collection schema lives in /admin/config.yml (public/admin/config.yml).
-//
-// Local editing:   npm run cms   in one terminal,   npm run dev   in another,
-//                  then visit http://localhost:4321/admin/
-// Production:      see README.md for the one-time OAuth proxy setup.
+import Homepage from '../../components/Homepage.astro';
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Edit content — Casa &amp; Studio Indigo</title>
-    <meta name="robots" content="noindex,nofollow" />
-  </head>
-  <body>
-    <script src="https://unpkg.com/decap-cms@^3.8.0/dist/decap-cms.js" is:inline></script>
-  </body>
-</html>
+<Homepage locale="en" edit />

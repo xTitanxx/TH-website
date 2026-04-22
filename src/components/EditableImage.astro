@@ -1,0 +1,26 @@
+---
+import PlaceholderImage from './PlaceholderImage.astro';
+
+interface Props {
+  edit: boolean;
+  file: string;
+  field: string; // e.g. "images.0.src"
+  altField?: string; // e.g. "images.0.alt"
+  src: string;
+  alt?: string;
+  aspect?: string;
+  class?: string;
+}
+const { edit, file, field, altField, src, alt = '', aspect = '4/3', class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={['editable-image relative group', className]}
+  data-editable={edit ? 'image' : undefined}
+  data-file={edit ? file : undefined}
+  data-field={edit ? field : undefined}
+  data-alt-field={edit && altField ? altField : undefined}
+  data-current-src={edit ? src : undefined}
+>
+  <PlaceholderImage src={src} alt={alt} aspect={aspect} />
+</div>

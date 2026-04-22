@@ -83,12 +83,14 @@ Supported locales: **English (default), Portuguese, French, German, Spanish**.
 - `src/pages/index.astro` and `src/pages/[locale]/index.astro` both delegate to `src/components/Homepage.astro`, which loads all 8 sections from `src/content/sections/<locale>/*.md`. Adding a new locale = add the folder + update `src/i18n/ui.ts`.
 - Numbers, dates, phone format: locale-appropriate.
 
-## 8b. Admin UI (Decap CMS at `/admin`)
+## 8b. Admin UI (in-place editor at `/admin`)
 
-- `src/pages/admin/index.astro` loads Decap CMS from a CDN; the schema is in `public/admin/config.yml`.
-- **Local editing** (works today): `npm run cms` in one terminal + `npm run dev` in another, then visit `http://localhost:4321/admin/`. No login required — edits go straight to the filesystem. Local mode is enabled via `local_backend: true` and only activates when Decap can reach `http://localhost:8081`.
-- **Editing on the live site** (optional, one-time setup): requires a tiny OAuth proxy because GitHub's OAuth flow needs a server-side code exchange. Free Cloudflare Worker setup documented in `README.md`. Once the worker is deployed, uncomment `base_url` in `public/admin/config.yml` and set `backend.repo` to `<user>/<repo>`. Until then, editing on the live site won't authenticate.
-- CMS-uploaded images go to `public/images/uploads/`. The section-specific placeholder paths (e.g. `public/images/casa-indigo/01-living.jpg`) are just the defaults set in the drafted markdown — when the owner uploads a different image via the CMS, it goes to `uploads/` and the frontmatter `src` updates automatically.
+- The admin **is** the homepage — `src/pages/admin/index.astro` renders `<Homepage edit />`, so it mirrors the live site pixel-for-pixel with edit affordances on top.
+- Each editable field is a `<EditableText>`, `<EditableMarkdown>`, or `<EditableImage>` in `Homepage.astro`. Those components emit `data-editable` attributes; the client script (`public/admin/admin.js`) attaches pencil/upload UI to them.
+- **Auth is a fine-grained GitHub PAT**, pasted into a prompt on first use and stored in `localStorage` (origin-scoped). No OAuth proxy, no backend. Saves call the GitHub Contents API directly from the browser and create real commits on `main`, which triggers a Pages rebuild (~1 min).
+- **Scope of editing**: title / eyebrow / tagline / body markdown / image src. Other frontmatter (captions, gmaps URLs) can be added by editing markdown directly in the repo; adding them to the UI is a follow-up.
+- **Local dev**: `npm run dev` and hit `http://localhost:4321/admin/` — same UI, but any save still goes to GitHub (no local file writing). The admin is deliberately identical in dev and prod to keep one code path.
+- Uploaded images land in `public/images/uploads/<timestamp>-<slug>.<ext>`; the markdown's `images[N].src` is rewritten in the same commit so the frontmatter and the binary stay in lockstep.
 
 ## 9. Design principles
 
@@ -135,7 +137,6 @@ Settled already: **enquiry-only, no calendar** for MVP. **Instagram** feed embed
 ```
 npm install
 npm run dev        # Astro dev server at http://localhost:4321
-npm run cms        # Decap local proxy at http://localhost:8081 (needed for /admin editing)
 npm run build      # static build to ./dist
 npm run preview    # serve the built site
 ```

@@ -3,20 +3,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from './Section.astro';
 import Gallery from './Gallery.astro';
 import PlaceholderImage from './PlaceholderImage.astro';
+import EditableText from './EditableText.astro';
+import EditableMarkdown from './EditableMarkdown.astro';
+import EditableImage from './EditableImage.astro';
+import AdminBar from './AdminBar.astro';
 import ContactForm from './ContactForm.astro';
 import { getEntry, render } from 'astro:content';
 import { t } from '../i18n/utils';
 import type { Locale } from '../i18n/ui';
 
-interface Props { locale: Locale }
-const { locale } = Astro.props;
+interface Props { locale: Locale; edit?: boolean }
+const { locale, edit = false } = Astro.props;
 const s = t(locale);
 
 async function loadSection(slug: string) {
   const entry = await getEntry('sections', `${locale}/${slug}`);
   if (!entry) throw new Error(`Missing content: ${locale}/${slug}`);
   const { Content } = await render(entry);
-  return { data: entry.data, Content };
+  return { data: entry.data, body: entry.body ?? '', Content, file: `src/content/sections/${locale}/${slug}.md` };
 }
 
 const hero = await loadSection('hero');
@@ -37,25 +41,36 @@ const LocationBody = location.Content;
 const ContactBody = contact.Content;
 
 const heroImage = hero.data.images?.[0];
-const title = `Casa & Studio Indigo — Aljezur, Algarve`;
+const title = edit
+  ? `Admin · Casa & Studio Indigo`
+  : `Casa & Studio Indigo — Aljezur, Algarve`;
+
+// Render a gallery where each image is individually editable (when in edit mode).
+function galleryProps(file: string, images: any[] | undefined) {
+  return (images ?? []).map((img: any, i: number) => ({
+    ...img,
+    _file: file,
+    _field: `images.${i}.src`,
+    _altField: `images.${i}.alt`,
+  }));
+}
 ---
-<BaseLayout
-  locale={locale}
-  title={title}
-  description={hero.data.tagline ?? ''}
->
+<BaseLayout locale={locale} title={title} description={hero.data.tagline ?? ''}>
+  {edit && <AdminBar locale={locale} />}
+
   <!-- HERO -->
   <section id="top" class="relative overflow-hidden">
     <div class="mx-auto max-w-6xl px-5 pt-16 md:pt-24 pb-16 md:pb-24 grid gap-10 md:grid-cols-[1.1fr_1fr] md:items-end">
       <div>
         {hero.data.eyebrow && (
-          <p class="text-xs uppercase tracking-[0.2em] text-[color:var(--color-indigo-500)] mb-5">{hero.data.eyebrow}</p>
+          <EditableText edit={edit} file={hero.file} field="eyebrow" as="p" value={hero.data.eyebrow}
+            class="text-xs uppercase tracking-[0.2em] text-[color:var(--color-indigo-500)] mb-5" />
         )}
-        <h1 class="font-serif text-4xl md:text-6xl leading-[1.05] text-[color:var(--color-sand-900)]">
-          {hero.data.title}
-        </h1>
+        <EditableText edit={edit} file={hero.file} field="title" as="h1" value={hero.data.title}
+          class="font-serif text-4xl md:text-6xl leading-[1.05] text-[color:var(--color-sand-900)]" />
         {hero.data.tagline && (
-          <p class="mt-6 text-lg text-[color:var(--color-sand-700)] max-w-xl">{hero.data.tagline}</p>
+          <EditableText edit={edit} file={hero.file} field="tagline" as="p" value={hero.data.tagline}
+            class="mt-6 text-lg text-[color:var(--color-sand-700)] max-w-xl block" />
         )}
         <div class="mt-8 flex gap-3 flex-wrap">
           <a href="#casa" class="rounded bg-[color:var(--color-indigo-700)] text-white px-5 py-2.5 text-sm hover:bg-[color:var(--color-indigo-900)] transition-colors">{s.nav.casa}</a>
@@ -65,56 +80,76 @@ const title = `Casa & Studio Indigo — Aljezur, Algarve`;
       </div>
       {heroImage && (
         <div class="overflow-hidden rounded">
-          <PlaceholderImage src={heroImage.src} alt={heroImage.alt} aspect="4/5" />
+          <EditableImage edit={edit} file={hero.file} field="images.0.src" altField="images.0.alt"
+            src={heroImage.src} alt={heroImage.alt} aspect="4/5" />
         </div>
       )}
     </div>
   </section>
 
-  <Section id="house" title={house.data.title} eyebrow={house.data.eyebrow}>
-    <HouseBody />
-    {house.data.images && house.data.images.length > 0 && (
-      <Gallery images={house.data.images} cols={2} aspect="16/10" />
-    )}
-  </Section>
+  {[house, casa, studio, shop, aljezur].map((sec, idx) => {
+    const ids = ['house', 'casa', 'studio', 'shop', 'aljezur'];
+    const tones = ['default', 'muted', 'default', 'muted', 'default'] as const;
+    const cols = [2, 3, 2, 3, 4] as const;
+    const aspects = ['16/10', '4/5', '4/3', '1/1', '4/3'];
+    const Body = [HouseBody, CasaBody, StudioBody, ShopBody, AljezurBody][idx];
+    return (
+      <Section id={ids[idx]} tone={tones[idx]}
+        title={undefined} eyebrow={undefined}>
+        <div class="mb-8 md:mb-12 max-w-2xl -mt-6">
+          {sec.data.eyebrow && (
+            <EditableText edit={edit} file={sec.file} field="eyebrow" as="p" value={sec.data.eyebrow}
+              class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+          )}
+          <EditableText edit={edit} file={sec.file} field="title" as="h2" value={sec.data.title}
+            class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+        </div>
+        <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="prose prose-neutral max-w-none">
+          <Body />
+        </EditableMarkdown>
+        {sec.data.images && sec.data.images.length > 0 && (
+          <div class:list={[
+            'grid gap-3 mt-10',
+            cols[idx] === 2 ? 'grid-cols-1 sm:grid-cols-2' :
+            cols[idx] === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' :
+            'grid-cols-2 lg:grid-cols-4',
+          ]}>
+            {sec.data.images.map((img, i) => (
+              <figure class="overflow-hidden rounded">
+                <EditableImage edit={edit} file={sec.file}
+                  field={`images.${i}.src`} altField={`images.${i}.alt`}
+                  src={img.src} alt={img.alt} aspect={aspects[idx]} />
+                {img.caption && (
+                  <figcaption class="mt-2 text-xs text-[color:var(--color-sand-700)]">{img.caption}</figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        )}
+      </Section>
+    );
+  })}
 
-  <Section id="casa" title={casa.data.title} eyebrow={casa.data.eyebrow} tone="muted">
-    <CasaBody />
-    {casa.data.images && casa.data.images.length > 0 && (
-      <Gallery images={casa.data.images} cols={3} aspect="4/5" />
-    )}
-  </Section>
-
-  <Section id="studio" title={studio.data.title} eyebrow={studio.data.eyebrow}>
-    <StudioBody />
-    {studio.data.images && studio.data.images.length > 0 && (
-      <Gallery images={studio.data.images} cols={2} aspect="4/3" />
-    )}
-  </Section>
-
-  <Section id="shop" title={shop.data.title} eyebrow={shop.data.eyebrow} tone="muted">
-    <ShopBody />
-    {shop.data.images && shop.data.images.length > 0 && (
-      <Gallery images={shop.data.images} cols={3} aspect="1/1" />
-    )}
-  </Section>
-
-  <Section id="aljezur" title={aljezur.data.title} eyebrow={aljezur.data.eyebrow}>
-    <AljezurBody />
-    {aljezur.data.images && aljezur.data.images.length > 0 && (
-      <Gallery images={aljezur.data.images} cols={4} aspect="4/3" />
-    )}
-  </Section>
-
-  <Section id="location" title={location.data.title} eyebrow={location.data.eyebrow} tone="muted">
+  <Section id="location" tone="muted" title={undefined} eyebrow={undefined}>
+    <div class="mb-8 md:mb-12 max-w-2xl -mt-6">
+      {location.data.eyebrow && (
+        <EditableText edit={edit} file={location.file} field="eyebrow" as="p" value={location.data.eyebrow}
+          class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+      )}
+      <EditableText edit={edit} file={location.file} field="title" as="h2" value={location.data.title}
+        class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+    </div>
     <div class="grid gap-10 md:grid-cols-[2fr_1fr] items-start">
       <div class="overflow-hidden rounded">
         {location.data.images?.[0] && (
-          <PlaceholderImage src={location.data.images[0].src} alt={location.data.images[0].alt} aspect="4/3" />
+          <EditableImage edit={edit} file={location.file} field="images.0.src" altField="images.0.alt"
+            src={location.data.images[0].src} alt={location.data.images[0].alt} aspect="4/3" />
         )}
       </div>
       <div class="space-y-5 text-sm">
-        <LocationBody />
+        <EditableMarkdown edit={edit} file={location.file} raw={location.body} class="prose prose-neutral max-w-none">
+          <LocationBody />
+        </EditableMarkdown>
         <ul class="space-y-2 not-prose">
           {location.data.gmaps && (
             <li><a class="underline underline-offset-4" href={location.data.gmaps} target="_blank" rel="noopener">Google Maps ↗</a></li>
@@ -127,10 +162,30 @@ const title = `Casa & Studio Indigo — Aljezur, Algarve`;
     </div>
   </Section>
 
-  <Section id="contact" title={contact.data.title} eyebrow={contact.data.eyebrow}>
-    <ContactBody />
+  <Section id="contact" title={undefined} eyebrow={undefined}>
+    <div class="mb-8 md:mb-12 max-w-2xl -mt-6">
+      {contact.data.eyebrow && (
+        <EditableText edit={edit} file={contact.file} field="eyebrow" as="p" value={contact.data.eyebrow}
+          class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+      )}
+      <EditableText edit={edit} file={contact.file} field="title" as="h2" value={contact.data.title}
+        class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+    </div>
+    <EditableMarkdown edit={edit} file={contact.file} raw={contact.body} class="prose prose-neutral max-w-none">
+      <ContactBody />
+    </EditableMarkdown>
     <div class="mt-8">
       <ContactForm locale={locale} />
     </div>
   </Section>
 </BaseLayout>
+
+{edit && (
+  <script is:inline define:vars={{ locale, adminJsUrl: `${import.meta.env.BASE_URL}admin/admin.js`.replace(/\/\/+/g, '/') }}>
+    window.__ADMIN__ = { owner: 'xTitanxx', repo: 'TH-website', branch: 'main', locale };
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.src = adminJsUrl;
+    document.head.appendChild(s);
+  </script>
+)}

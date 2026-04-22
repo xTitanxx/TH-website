@@ -1,0 +1,24 @@
+---
+interface Props {
+  edit: boolean;
+  file: string;
+  field: string;
+  as?: string;
+  class?: string;
+  value: string;
+}
+const { edit, file, field, as = 'span', class: className = '', value } = Astro.props;
+const Tag = as as any;
+---
+
+{edit ? (
+  <Tag
+    class:list={['editable-text relative inline-block', className]}
+    data-editable="text"
+    data-file={file}
+    data-field={field}
+    data-original={value}
+  >{value}</Tag>
+) : (
+  <Tag class={className}>{value}</Tag>
+)}

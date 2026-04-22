@@ -13,52 +13,32 @@ npm run preview      # serve the built site
 
 ## Editing content at `/admin`
 
-The site ships with a **Decap CMS** admin at `/admin/`. You can edit section text and upload images through a friendly form UI — no need to touch markdown by hand.
+The admin is a **mirror of the live homepage** — same layout, same content — with edit affordances that appear when you're signed in:
 
-### Local editing (works immediately, no setup)
+- **Pencil / click-to-edit** on every title, eyebrow, tagline, image alt, and markdown body.
+- **"Replace image"** button on hover over every image — file picker → upload → immediate swap.
+- Each save becomes a real commit on `main` authored by you. GitHub Actions rebuilds the site and your change appears live in about a minute.
 
-In two terminals:
+### One-time setup: your Personal Access Token
 
-```sh
-# Terminal 1
-npm run cms          # starts the Decap proxy on http://localhost:8081
+The admin talks to the GitHub Contents API directly from the browser. No proxy, no backend — you sign in with a **fine-grained PAT**:
 
-# Terminal 2
-npm run dev          # starts Astro on http://localhost:4321
-```
+1. Go to <https://github.com/settings/personal-access-tokens/new>
+2. **Resource owner**: `xTitanxx`
+3. **Repository access**: only `xTitanxx/TH-website`
+4. **Permissions → Repository permissions → Contents**: **Read and write**
+5. Generate, copy the `github_pat_...` token
+6. Visit `/admin/` on the deployed site → click **Unlock editing** → paste the token
 
-Visit **<http://localhost:4321/admin/>**. No login. Edits write straight to the files in `src/content/sections/en/` and `public/images/uploads/`, visible live in the other browser tab. Commit and push when happy.
+The token is stored in your browser's `localStorage` for this origin only. Sign out wipes it.
 
-### Editing on the deployed site (optional, one-time setup)
+### Editing flow
 
-GitHub's OAuth flow requires a small server to exchange the auth code — so editing on a plain GitHub Pages deployment needs a tiny proxy. Free, ~5 minutes:
-
-1. **Create a GitHub OAuth App** at <https://github.com/settings/developers> → *OAuth Apps* → *New OAuth App*.
-   - Homepage URL: your site URL
-   - Authorization callback URL: `https://<your-worker-subdomain>.workers.dev/callback` (you'll set the subdomain in step 2)
-   - Note the **Client ID** and generate a **Client Secret**.
-
-2. **Deploy a Cloudflare Worker** as the OAuth proxy. Any maintained Decap OAuth worker will do; Sterling Wise's is a common pick:
-   ```sh
-   npx wrangler deploy \
-     --name decap-oauth \
-     --var GITHUB_CLIENT_ID:<...> \
-     --var GITHUB_CLIENT_SECRET:<...>
-   ```
-   (See <https://github.com/sterlingwes/decap-proxy> for the exact template.)
-
-3. **Wire the config** in `public/admin/config.yml`:
-   ```yaml
-   backend:
-     name: github
-     repo: <your-github-user>/<your-repo-name>
-     branch: main
-     base_url: https://decap-oauth.<your-subdomain>.workers.dev
-   ```
-
-4. Push, and `/admin/` on the deployed site will prompt you to sign in with GitHub. All edits become real commits on `main` — which means GitHub Actions rebuilds and redeploys automatically.
-
-Until step 4, `/admin/` on the live site will load but authentication won't complete. Use local editing in the meantime.
+- Click a title, eyebrow, or tagline → it becomes editable in place. Press `Enter` to save, `Esc` to cancel.
+- Hover over a section body → a pencil button appears in the corner. Click → raw Markdown in a textarea → **Save**.
+- Hover over an image → **Replace image** overlay. Click → pick a file → uploads to `public/images/uploads/` and commits.
+- Top-right toggle switches the locale you're editing: `EN · PT · FR · DE · ES`.
+- A toast confirms every save; a banner shows sign-in state and save status.
 
 ## Environment variables
 
@@ -74,29 +54,35 @@ For CI, set these as GitHub Actions secrets / variables (see `.github/workflows/
 
 Push to `main` and GitHub Actions builds and deploys to GitHub Pages.
 
-Enable GitHub Pages in repo settings → **Pages** → Build and deployment · Source: **GitHub Actions**.
+- Repo: <https://github.com/xTitanxx/TH-website>
+- Live site: <https://xtitanxx.github.io/TH-website/>
+- Admin: <https://xtitanxx.github.io/TH-website/admin/>
 
-If the repo is hosted at `https://<user>.github.io/<repo>/`, set the repository **variable** `BASE_PATH` to `/<repo>/`.
-For a custom domain or user/org root site, leave it unset (defaults to `/`).
+`BASE_PATH` is set as a repo variable to `/TH-website/` so Astro emits the correct asset URLs on GitHub Pages.
 
 ## Repo layout
 
 ```
 src/
-  content/sections/en/         markdown source for every page section
-  content.config.ts            schema for the content collection
-  pages/index.astro            EN homepage — composes sections from markdown
-  pages/[locale]/index.astro   PT/FR/DE/ES "translation in progress" pages
-  pages/admin/index.astro      loads Decap CMS
-  pages/privacy.astro
-  components/                  PlaceholderImage, Gallery, Header, Footer, Section, ContactForm, LanguageSwitcher
-  i18n/ui.ts, utils.ts         UI strings + helpers
+  content/sections/{en,pt,fr,de,es}/    markdown source for every page section
+  content.config.ts                     schema for the content collection
+  components/
+    Homepage.astro                      composes the 8 sections; accepts edit prop
+    EditableText/Markdown/Image.astro   wrap fields with data-attributes used by the admin JS
+    AdminBar.astro                      top bar rendered only in edit mode
+    PlaceholderImage / Gallery / Section / ContactForm / Header / Footer / LanguageSwitcher
+  pages/
+    index.astro                         EN homepage
+    [locale]/index.astro                PT/FR/DE/ES homepages
+    admin/index.astro                   EN admin (Homepage with edit=true)
+    admin/[locale]/index.astro          PT/FR/DE/ES admin
+    privacy.astro
   layouts/BaseLayout.astro
-  styles/global.css            Tailwind v4 theme tokens
+  i18n/ui.ts, utils.ts
+  styles/global.css                     Tailwind v4 theme tokens
 public/
-  admin/config.yml             Decap CMS schema
-  images/                      section photos (live files replace placeholders on sight)
-  images/uploads/              CMS-uploaded media
+  admin/admin.js                        client-side admin logic (browser ESM, no build)
+  images/                               section photos; uploads/ holds CMS-uploaded media
   favicon.svg, robots.txt, .nojekyll
-.github/workflows/deploy.yml   build + deploy to GitHub Pages
+.github/workflows/deploy.yml            build + deploy to GitHub Pages
 ```

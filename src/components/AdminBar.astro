@@ -1,0 +1,51 @@
+---
+import { locales, localeNames, type Locale } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+function adminPath(l: Locale) {
+  return l === 'en' ? '/admin/' : `/admin/${l}/`;
+}
+---
+
+<div id="admin-bar" class="sticky top-0 z-50 border-b border-[color:var(--color-indigo-700)]/20 bg-[color:var(--color-indigo-900)] text-white shadow-sm">
+  <div class="mx-auto max-w-6xl px-5 h-12 flex items-center justify-between gap-4 text-sm">
+    <div class="flex items-center gap-3">
+      <span class="font-serif text-base">Admin</span>
+      <a href="/" class="text-white/60 hover:text-white underline underline-offset-4">View live site ↗</a>
+    </div>
+
+    <nav aria-label="Edit language" class="flex items-center gap-1 text-xs uppercase tracking-wider">
+      {locales.map((l, i) => (
+        <>
+          {i > 0 && <span aria-hidden="true" class="text-white/30">·</span>}
+          <a
+            href={adminPath(l)}
+            lang={l}
+            aria-current={l === locale ? 'true' : undefined}
+            class:list={[
+              'px-1 py-0.5 rounded',
+              l === locale ? 'font-semibold text-white' : 'text-white/60 hover:text-white',
+            ]}
+            title={localeNames[l]}
+          >{l}</a>
+        </>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <span id="admin-status" class="text-xs text-white/60">loading…</span>
+      <button id="admin-signin" type="button"
+        class="hidden rounded bg-white text-[color:var(--color-indigo-900)] px-3 py-1 text-xs font-medium hover:bg-[color:var(--color-sand-50)]">
+        Unlock editing
+      </button>
+      <button id="admin-signout" type="button"
+        class="hidden text-xs text-white/60 hover:text-white underline underline-offset-4">
+        Sign out
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-toast-root" class="fixed bottom-6 right-6 z-[60] flex flex-col gap-2"></div>

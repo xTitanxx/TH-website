@@ -1,0 +1,24 @@
+---
+interface Props {
+  edit: boolean;
+  file: string;
+  field?: string;
+  raw: string;
+  class?: string;
+}
+const { edit, file, field = 'body', raw, class: className = '' } = Astro.props;
+---
+
+{edit ? (
+  <div
+    class:list={['editable-markdown relative', className]}
+    data-editable="markdown"
+    data-file={file}
+    data-field={field}
+  >
+    <pre class="raw-markdown-source" hidden>{raw}</pre>
+    <div class="rendered-body"><slot /></div>
+  </div>
+) : (
+  <div class={className}><slot /></div>
+)}
