@@ -360,6 +360,7 @@ function wireImageFields() {
       if (!f) return;
       btn.textContent = 'Uploading…';
       btn.disabled = true;
+      let uploadDone = false;
       try {
         const ext = (f.name.split('.').pop() ?? 'jpg').toLowerCase().slice(0, 5);
         const base = f.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'image';
@@ -368,7 +369,9 @@ function wireImageFields() {
         const publicSrc = `/images/uploads/${fname}`;
 
         const buf = await f.arrayBuffer();
+        setStatus(`uploading ${(f.size / 1024 / 1024).toFixed(1)} MB…`);
         await uploadBinary(uploadPath, buf, `admin: upload ${fname}`);
+        uploadDone = true;
         await commitUpdate(
           wrapper.dataset.file,
           [{ kind: 'data', path: wrapper.dataset.field, value: publicSrc }],
@@ -389,8 +392,12 @@ function wireImageFields() {
           img.style.aspectRatio = '4/3';
           wrapper.prepend(img);
         }
-      } catch {
-        // toast already fired in commitUpdate / uploadBinary
+      } catch (e) {
+        console.error('[admin] image upload failed:', e);
+        setStatus('upload failed');
+        if (!uploadDone) {
+          toast(`Upload failed: ${(e && e.message) || e}`, 'error', 8000);
+        }
       } finally {
         btn.disabled = false;
         btn.textContent = 'Replace image';
