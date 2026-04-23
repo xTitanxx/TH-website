@@ -1,11 +1,11 @@
 ---
-title: "The House"
-eyebrow: "The building"
+title: The House
+eyebrow: The building
 images:
-  - src: "/images/house/facade.jpg"
-    alt: "The house on the street"
-  - src: "/images/house/street.jpg"
-    alt: "The pedestrian street in front of the house"
+  - src: /images/uploads/1776907622309-6r5a5562.jpg
+    alt: The house on the street
+  - src: /images/house/street.jpg
+    alt: The pedestrian street in front of the house
 ---
 
 Three floors, one building, three ways to stay.
