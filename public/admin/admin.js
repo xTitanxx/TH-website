@@ -339,6 +339,45 @@ function wireMarkdownFields() {
   });
 }
 
+// Resize + re-encode in the browser before upload so GitHub Pages isn't
+// serving 17 MB iPhone originals. Falls back to the raw file on any failure
+// (e.g. HEIC that the browser can't decode) so the upload still happens.
+async function compressImage(file, { maxEdge = 2400, quality = 0.82 } = {}) {
+  // Small files and non-rasters aren't worth touching.
+  if (file.size < 300 * 1024) return { blob: file, ext: extFromType(file) };
+  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return { blob: file, ext: extFromType(file) };
+
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = typeof OffscreenCanvas !== 'undefined'
+      ? new OffscreenCanvas(w, h)
+      : Object.assign(document.createElement('canvas'), { width: w, height: h });
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    bitmap.close?.();
+
+    const blob = canvas.convertToBlob
+      ? await canvas.convertToBlob({ type: 'image/jpeg', quality })
+      : await new Promise((res) => canvas.toBlob(res, 'image/jpeg', quality));
+
+    if (!blob || blob.size >= file.size) return { blob: file, ext: extFromType(file) };
+    return { blob, ext: 'jpg' };
+  } catch (e) {
+    console.warn('[admin] compression failed, uploading original:', e);
+    return { blob: file, ext: extFromType(file) };
+  }
+}
+
+function extFromType(file) {
+  const map = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif' };
+  if (map[file.type]) return map[file.type];
+  return (file.name.split('.').pop() ?? 'jpg').toLowerCase().slice(0, 5);
+}
+
 function wireImageFields() {
   document.querySelectorAll('[data-editable="image"]').forEach((wrapper) => {
     const btn = document.createElement('button');
@@ -362,14 +401,15 @@ function wireImageFields() {
       btn.disabled = true;
       let uploadDone = false;
       try {
-        const ext = (f.name.split('.').pop() ?? 'jpg').toLowerCase().slice(0, 5);
+        setStatus(`compressing ${(f.size / 1024 / 1024).toFixed(1)} MB…`);
+        const { blob, ext } = await compressImage(f);
         const base = f.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'image';
         const fname = `${Date.now()}-${base}.${ext}`;
         const uploadPath = `public/images/uploads/${fname}`;
         const publicSrc = `/images/uploads/${fname}`;
 
-        const buf = await f.arrayBuffer();
-        setStatus(`uploading ${(f.size / 1024 / 1024).toFixed(1)} MB…`);
+        const buf = await blob.arrayBuffer();
+        setStatus(`uploading ${(blob.size / 1024 / 1024).toFixed(2)} MB…`);
         await uploadBinary(uploadPath, buf, `admin: upload ${fname}`);
         uploadDone = true;
         await commitUpdate(
