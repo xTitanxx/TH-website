@@ -4,7 +4,7 @@ eyebrow: Upper two floors · sleeps six
 images:
   - src: /images/casa-indigo/01-living.jpg
     alt: Casa Indigo — living room
-  - src: /images/casa-indigo/02-kitchen.jpg
+  - src: /images/uploads/1777043020065-6r5a5553.jpg
     alt: Casa Indigo — kitchen
   - src: /images/uploads/1777043013413-6r5a5613.jpg
     alt: Casa Indigo — main bedroom
