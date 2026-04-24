@@ -1,13 +1,13 @@
 ---
-title: "Valerie's Shop"
-eyebrow: "Ground floor"
+title: Casa Indigo Store
+eyebrow: Ground floor
 images:
-  - src: "/images/shop/01-interior.jpg"
-    alt: "Valerie's shop — interior"
-  - src: "/images/shop/02-textiles.jpg"
-    alt: "Handmade textiles"
-  - src: "/images/shop/03-vintage.jpg"
-    alt: "Vintage pieces on display"
+  - src: /images/shop/01-interior.jpg
+    alt: Valerie's shop — interior
+  - src: /images/shop/02-textiles.jpg
+    alt: Handmade textiles
+  - src: /images/shop/03-vintage.jpg
+    alt: Vintage pieces on display
 ---
 
 On the ground floor, opening onto the street, is Valerie's shop. She makes — handmade textiles, mostly — and she finds. Pieces she brings back from markets and estate sales sit alongside the things she's sewing.
