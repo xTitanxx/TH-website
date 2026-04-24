@@ -2,7 +2,7 @@
 title: The House
 eyebrow: The building
 images:
-  - src: /images/uploads/1776907622309-6r5a5562.jpg
+  - src: /images/uploads/1777043055377-6r5a5538.jpg
     alt: The house on the street
   - src: /images/house/street.jpg
     alt: The pedestrian street in front of the house
