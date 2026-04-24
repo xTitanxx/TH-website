@@ -1,4 +1,4 @@
 ---
-titleScale: 0.7
+titleScale: 1.2
 ---
 
