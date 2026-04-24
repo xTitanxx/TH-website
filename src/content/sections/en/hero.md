@@ -1,5 +1,7 @@
 ---
-title: One townhouse. Two charming spaces.
+title: |-
+  One townhouse. 
+  Two charming spaces.
 eyebrow: Aljezur · Costa Vicentina
 tagline: >-
   Stay at our three-storey townhouse located in a pedestrian area in the rural town of Aljezur, on the edge of the
