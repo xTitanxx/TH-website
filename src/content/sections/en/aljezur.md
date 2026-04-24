@@ -1,19 +1,19 @@
 ---
-title: "Aljezur & Surroundings"
-eyebrow: "Around here"
+title: Aljezur & Surroundings
+eyebrow: Around here
 images:
-  - src: "/images/aljezur/village.jpg"
-    alt: "The old town and castle of Aljezur"
-    caption: "The village"
-  - src: "/images/aljezur/beach.jpg"
-    alt: "A Costa Vicentina beach at low tide"
-    caption: "The beaches"
-  - src: "/images/aljezur/nature.jpg"
-    alt: "Wildflowers on the Rota Vicentina"
-    caption: "Nature"
-  - src: "/images/aljezur/lagos.jpg"
-    alt: "Evening light on Lagos harbour"
-    caption: "Further afield"
+  - src: /images/uploads/1777043062287-6r5a5631-aurorahdr-edit.jpg
+    alt: The old town and castle of Aljezur
+    caption: The village
+  - src: /images/aljezur/beach.jpg
+    alt: A Costa Vicentina beach at low tide
+    caption: The beaches
+  - src: /images/aljezur/nature.jpg
+    alt: Wildflowers on the Rota Vicentina
+    caption: Nature
+  - src: /images/aljezur/lagos.jpg
+    alt: Evening light on Lagos harbour
+    caption: Further afield
 ---
 
 Aljezur sits on both sides of a small river, on the quieter, wilder stretch of the Algarve called the Costa Vicentina. The new part of the village is on one bank; the old part, with the castle ruins, is on the other. There is a market on Saturday mornings.
