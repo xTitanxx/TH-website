@@ -160,48 +160,40 @@ function galleryProps(file: string, images: any[] | undefined) {
     );
   })}
 
-  <!-- ALJEZUR — chapter layout when frontmatter has `chapters`, otherwise default. -->
+  <!-- ALJEZUR — single-column editorial layout when frontmatter has `chapters`. -->
   {aljezur.data.chapters && aljezur.data.chapters.length > 0 ? (
     <Section id="aljezur" tone="default" title={undefined} eyebrow={undefined}>
-      <div class="mb-8 md:mb-12 max-w-2xl -mt-6">
-        {aljezur.data.eyebrow && (
-          <EditableText edit={edit} file={aljezur.file} field="eyebrow" as="p" value={aljezur.data.eyebrow}
-            class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
-        )}
-        <EditableText edit={edit} file={aljezur.file} field="title" as="h2" value={aljezur.data.title}
-          class="section-title text-[color:var(--color-sand-900)]" />
-      </div>
-      {aljezur.body.trim() && (
-        <div class="max-w-prose mb-14 md:mb-20">
-          <AljezurBody />
+      <div class="max-w-3xl mx-auto -mt-6">
+        <div class="mb-10 md:mb-14">
+          {aljezur.data.eyebrow && (
+            <EditableText edit={edit} file={aljezur.file} field="eyebrow" as="p" value={aljezur.data.eyebrow}
+              class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+          )}
+          <EditableText edit={edit} file={aljezur.file} field="title" as="h2" value={aljezur.data.title}
+            class="section-title text-[color:var(--color-sand-900)]" />
         </div>
-      )}
-      <div class="grid gap-14 md:gap-20">
-        {aljezur.data.chapters.map((ch, i) => {
-          const hasImage = Boolean(ch.image);
-          const imageLeft = i % 2 === 1;
-          if (!hasImage) {
-            return (
-              <div class="max-w-prose">
-                <h3 class="font-serif text-2xl mb-3 text-[color:var(--color-sand-900)]">{ch.heading}</h3>
-                <p class="whitespace-pre-line" set:html={mdLite(ch.body)} />
+        {aljezur.body.trim() && (
+          <div class="max-w-prose mb-16 md:mb-24 text-[color:var(--color-sand-900)]">
+            <AljezurBody />
+          </div>
+        )}
+        <div class="grid gap-16 md:gap-24">
+          {aljezur.data.chapters.map((ch, i) => (
+            <article>
+              <div class="max-w-prose mb-6">
+                <p class="text-[11px] uppercase tracking-[0.22em] text-[color:var(--color-indigo-500)] mb-2">{ch.heading}</p>
+                <p class="whitespace-pre-line leading-relaxed" set:html={mdLite(ch.body)} />
               </div>
-            );
-          }
-          return (
-            <div class="grid gap-8 md:gap-12 md:grid-cols-2 md:items-center">
-              <div class={imageLeft ? 'md:order-2' : ''}>
-                <h3 class="font-serif text-2xl mb-3 text-[color:var(--color-sand-900)]">{ch.heading}</h3>
-                <p class="max-w-prose whitespace-pre-line" set:html={mdLite(ch.body)} />
-              </div>
-              <figure class="overflow-hidden rounded">
-                <EditableImage edit={edit} file={aljezur.file}
-                  field={`chapters.${i}.image`} altField={`chapters.${i}.alt`}
-                  src={ch.image!} alt={ch.alt ?? ''} aspect="4/3" />
-              </figure>
-            </div>
-          );
-        })}
+              {ch.image && (
+                <figure class="overflow-hidden rounded mt-2">
+                  <EditableImage edit={edit} file={aljezur.file}
+                    field={`chapters.${i}.image`} altField={`chapters.${i}.alt`}
+                    src={ch.image} alt={ch.alt ?? ''} aspect="3/2" />
+                </figure>
+              )}
+            </article>
+          ))}
+        </div>
       </div>
     </Section>
   ) : null}
