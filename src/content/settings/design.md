@@ -1,3 +1,4 @@
 ---
-titleScale: 1
+titleScale: 0.9
 ---
+
