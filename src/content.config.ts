@@ -21,4 +21,11 @@ const sections = defineCollection({
   }),
 });
 
-export const collections = { sections };
+const settings = defineCollection({
+  loader: glob({ base: './src/content/settings', pattern: '**/*.md' }),
+  schema: z.object({
+    titleScale: z.number().min(0.5).max(2).default(1),
+  }),
+});
+
+export const collections = { sections, settings };

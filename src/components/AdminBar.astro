@@ -32,6 +32,22 @@ const { locale } = Astro.props;
     </nav>
 
     <div class="flex items-center gap-3">
+      <div id="admin-title-scale-group" class="hidden items-center gap-2 text-xs text-white/80" role="group" aria-label="Title size">
+        <label for="admin-title-scale" class="whitespace-nowrap">Title size</label>
+        <input
+          id="admin-title-scale"
+          type="range"
+          min="0.7"
+          max="1.2"
+          step="0.05"
+          class="w-28 accent-white"
+        />
+        <span id="admin-title-scale-value" class="tabular-nums w-10 text-right text-white/60">1.00</span>
+        <button id="admin-title-scale-save" type="button" disabled
+          class="rounded bg-white/10 text-white/90 px-2 py-1 text-[11px] font-medium hover:bg-white/20 disabled:opacity-40 disabled:cursor-not-allowed">
+          Save size
+        </button>
+      </div>
       <span id="admin-status" class="text-xs text-white/60">loading…</span>
       <button id="admin-signin" type="button"
         class="hidden rounded bg-white text-[color:var(--color-indigo-900)] px-3 py-1 text-xs font-medium hover:bg-[color:var(--color-sand-50)]">

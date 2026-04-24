@@ -67,7 +67,7 @@ function galleryProps(file: string, images: any[] | undefined) {
             class="text-xs uppercase tracking-[0.2em] text-[color:var(--color-indigo-500)] mb-5" />
         )}
         <EditableText edit={edit} file={hero.file} field="title" as="h1" value={hero.data.title}
-          class="font-serif text-4xl md:text-6xl leading-[1.05] text-[color:var(--color-sand-900)]" />
+          class="font-serif site-title-hero text-[color:var(--color-sand-900)]" />
         {hero.data.tagline && (
           <EditableText edit={edit} file={hero.file} field="tagline" as="p" value={hero.data.tagline}
             class="mt-6 text-lg text-[color:var(--color-sand-700)] max-w-xl block" />
@@ -102,7 +102,7 @@ function galleryProps(file: string, images: any[] | undefined) {
               class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
           )}
           <EditableText edit={edit} file={sec.file} field="title" as="h2" value={sec.data.title}
-            class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+            class="section-title text-[color:var(--color-sand-900)]" />
         </div>
         <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="max-w-prose">
           <Body />
@@ -137,7 +137,7 @@ function galleryProps(file: string, images: any[] | undefined) {
           class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
       )}
       <EditableText edit={edit} file={location.file} field="title" as="h2" value={location.data.title}
-        class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+        class="section-title text-[color:var(--color-sand-900)]" />
     </div>
     <div class="grid gap-10 md:grid-cols-[2fr_1fr] items-start">
       <div class="overflow-hidden rounded">
@@ -169,7 +169,7 @@ function galleryProps(file: string, images: any[] | undefined) {
           class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
       )}
       <EditableText edit={edit} file={contact.file} field="title" as="h2" value={contact.data.title}
-        class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
+        class="section-title text-[color:var(--color-sand-900)]" />
     </div>
     <EditableMarkdown edit={edit} file={contact.file} raw={contact.body} class="max-w-prose">
       <ContactBody />
@@ -181,7 +181,7 @@ function galleryProps(file: string, images: any[] | undefined) {
 </BaseLayout>
 
 {edit && (
-  <script is:inline define:vars={{ locale, adminJsUrl: `${import.meta.env.BASE_URL}admin/admin.js`.replace(/\/\/+/g, '/') }}>
+  <script is:inline define:vars={{ locale, adminJsUrl: `${import.meta.env.BASE_URL}admin/admin.js?v=${Date.now()}`.replace(/([^:])\/\/+/g, '$1/') }}>
     window.__ADMIN__ = { owner: 'xTitanxx', repo: 'TH-website', branch: 'main', locale };
     const s = document.createElement('script');
     s.type = 'module';

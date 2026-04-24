@@ -468,6 +468,61 @@ function wireImageFields() {
 }
 
 // ---------------------------------------------------------------------------
+// Title-size slider (global design setting)
+// ---------------------------------------------------------------------------
+
+function wireTitleScale() {
+  const group = document.getElementById('admin-title-scale-group');
+  const slider = document.getElementById('admin-title-scale');
+  const valueEl = document.getElementById('admin-title-scale-value');
+  const saveBtn = document.getElementById('admin-title-scale-save');
+  if (!group || !slider || !saveBtn) return;
+
+  group.classList.remove('hidden');
+  group.classList.add('flex');
+
+  const doc = document.documentElement;
+  const computed = parseFloat(getComputedStyle(doc).getPropertyValue('--title-scale')) || 1;
+  const saved = Math.min(1.2, Math.max(0.7, computed));
+  slider.value = String(saved);
+  slider.dataset.saved = String(saved);
+  valueEl.textContent = saved.toFixed(2);
+
+  const refreshSaveState = () => {
+    const cur = parseFloat(slider.value);
+    const savedVal = parseFloat(slider.dataset.saved);
+    saveBtn.disabled = Math.abs(cur - savedVal) < 0.001;
+  };
+  refreshSaveState();
+
+  slider.addEventListener('input', () => {
+    const v = parseFloat(slider.value);
+    doc.style.setProperty('--title-scale', String(v));
+    valueEl.textContent = v.toFixed(2);
+    refreshSaveState();
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    const v = parseFloat(slider.value);
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+    try {
+      await commitUpdate(
+        'src/content/settings/design.md',
+        [{ kind: 'data', path: 'titleScale', value: v }],
+        'titleScale',
+      );
+      slider.dataset.saved = String(v);
+    } catch {
+      // commitUpdate already toasted
+    } finally {
+      saveBtn.textContent = 'Save size';
+      refreshSaveState();
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------
 
@@ -491,6 +546,7 @@ async function boot() {
   }
 
   wireAuthButtons(true, who.login);
+  wireTitleScale();
   wireTextFields();
   wireMarkdownFields();
   wireImageFields();

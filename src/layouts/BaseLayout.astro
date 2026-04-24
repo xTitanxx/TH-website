@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { localeNames, type Locale } from '../i18n/ui';
 import { localePath, withBase } from '../i18n/utils';
+import { getEntry } from 'astro:content';
 
 interface Props {
   locale: Locale;
@@ -13,9 +14,11 @@ interface Props {
 
 const { locale, title, description } = Astro.props;
 const siteOrigin = Astro.site?.origin ?? '';
+const design = await getEntry('settings', 'design');
+const titleScale = design?.data?.titleScale ?? 1;
 ---
 <!doctype html>
-<html lang={locale}>
+<html lang={locale} style={`--title-scale:${titleScale}`}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
