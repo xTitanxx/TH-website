@@ -10,7 +10,7 @@ images:
     alt: Casa Indigo — main bedroom
   - src: /images/casa-indigo/04-balcony.jpg
     alt: Casa Indigo — one of the balconies
-  - src: /images/casa-indigo/05-bathroom.jpg
+  - src: /images/uploads/1777042984372-6r5a5601.jpg
     alt: Casa Indigo — bathroom
   - src: /images/uploads/1777042977990-6r5a5598.jpg
     alt: Casa Indigo — second living space
