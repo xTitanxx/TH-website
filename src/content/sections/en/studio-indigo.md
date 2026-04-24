@@ -6,7 +6,7 @@ images:
     alt: Studio Indigo — the main room
   - src: /images/studio-indigo/02-kitchen.jpg
     alt: Studio Indigo — kitchenette
-  - src: /images/studio-indigo/03-bed.jpg
+  - src: /images/uploads/1777041103838-img-1144.jpg
     alt: Studio Indigo — bed
   - src: /images/studio-indigo/04-bathroom.jpg
     alt: Studio Indigo — bathroom with sliding door
