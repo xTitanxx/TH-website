@@ -8,7 +8,7 @@ images:
     alt: Casa Indigo — kitchen
   - src: /images/casa-indigo/03-bedroom.jpg
     alt: Casa Indigo — main bedroom
-  - src: /images/casa-indigo/04-balcony.jpg
+  - src: /images/uploads/1777043006711-6r5a5565-aurorahdr-edit.jpg
     alt: Casa Indigo — one of the balconies
   - src: /images/uploads/1777042984372-6r5a5601.jpg
     alt: Casa Indigo — bathroom
