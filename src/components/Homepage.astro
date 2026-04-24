@@ -104,7 +104,7 @@ function galleryProps(file: string, images: any[] | undefined) {
           <EditableText edit={edit} file={sec.file} field="title" as="h2" value={sec.data.title}
             class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
         </div>
-        <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="prose prose-neutral max-w-none">
+        <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="max-w-prose">
           <Body />
         </EditableMarkdown>
         {sec.data.images && sec.data.images.length > 0 && (
@@ -147,7 +147,7 @@ function galleryProps(file: string, images: any[] | undefined) {
         )}
       </div>
       <div class="space-y-5 text-sm">
-        <EditableMarkdown edit={edit} file={location.file} raw={location.body} class="prose prose-neutral max-w-none">
+        <EditableMarkdown edit={edit} file={location.file} raw={location.body} class="max-w-prose">
           <LocationBody />
         </EditableMarkdown>
         <ul class="space-y-2 not-prose">
@@ -171,7 +171,7 @@ function galleryProps(file: string, images: any[] | undefined) {
       <EditableText edit={edit} file={contact.file} field="title" as="h2" value={contact.data.title}
         class="text-3xl md:text-4xl text-[color:var(--color-sand-900)]" />
     </div>
-    <EditableMarkdown edit={edit} file={contact.file} raw={contact.body} class="prose prose-neutral max-w-none">
+    <EditableMarkdown edit={edit} file={contact.file} raw={contact.body} class="max-w-prose">
       <ContactBody />
     </EditableMarkdown>
     <div class="mt-8">
