@@ -30,8 +30,7 @@ const resolvedSrc = withBase(src);
     loading="lazy"
     decoding="async"
     sizes={sizes}
-    class:list={['block w-full h-full object-cover', className]}
-    style={`aspect-ratio:${aspect}`}
+    class:list={['block w-full h-auto', className]}
   />
 ) : (
   <div
