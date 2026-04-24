@@ -1,0 +1,93 @@
+---
+// Click-to-enlarge lightbox for all content images. Uses the native <dialog>
+// element — no JS framework, no third-party lightbox library.
+---
+<dialog id="lightbox" aria-label="Expanded image">
+  <button type="button" class="lightbox-close" aria-label="Close">×</button>
+  <img alt="" />
+</dialog>
+
+<style is:global>
+  dialog#lightbox {
+    padding: 0;
+    border: none;
+    background: transparent;
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: auto;
+  }
+  dialog#lightbox::backdrop {
+    background: rgba(20, 26, 56, 0.88);
+    backdrop-filter: blur(6px);
+  }
+  dialog#lightbox img {
+    display: block;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: auto;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    cursor: zoom-out;
+  }
+  dialog#lightbox .lightbox-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #141a38;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  dialog#lightbox .lightbox-close:hover { background: white; }
+
+  /* Cursor hint: any image in the main flow is zoomable. */
+  main img { cursor: zoom-in; }
+  /* Admin edit-mode overrides this back to default on the editable wrapper. */
+  [data-editable="image"] img { cursor: default; }
+</style>
+
+<script is:inline>
+  (() => {
+    const dialog = document.getElementById('lightbox');
+    if (!dialog) return;
+    const img = dialog.querySelector('img');
+    const closeBtn = dialog.querySelector('.lightbox-close');
+
+    const open = (src, alt) => {
+      img.src = src;
+      img.alt = alt || '';
+      dialog.showModal();
+    };
+    const close = () => dialog.close();
+
+    // Delegate clicks from anywhere in the page.
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (!(target instanceof Element)) return;
+      // Don't hijack admin UI controls or any interactive element.
+      if (target.closest('button, a, input, textarea, [contenteditable]')) return;
+      // In admin edit mode, clicking an editable image should do nothing
+      // (let the user use the Replace-image affordance instead).
+      if (target.closest('[data-editable="image"]')) return;
+      const clickedImg = target.closest('main img');
+      if (!clickedImg) return;
+      e.preventDefault();
+      open(clickedImg.src, clickedImg.alt);
+    });
+
+    closeBtn?.addEventListener('click', close);
+    // Click on backdrop (outside the image) closes.
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+    // Click on the image itself also closes.
+    img.addEventListener('click', close);
+  })();
+</script>

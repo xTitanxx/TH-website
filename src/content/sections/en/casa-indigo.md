@@ -14,6 +14,8 @@ images:
     alt: Casa Indigo — bathroom
   - src: /images/uploads/1777042977990-6r5a5598.jpg
     alt: Casa Indigo — second living space
+  - src: /images/casa-indigo/07-placeholder.jpg
+    alt: ""
 ---
 
 Newly renovated Casa Indigo offers plenty of space to settle in and feel at home, with three bedrooms, a living area, a fully equipped kitchen with dining area, three full bathrooms, and an additional toilet.
