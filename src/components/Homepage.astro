@@ -181,11 +181,12 @@ function galleryProps(file: string, images: any[] | undefined) {
 </BaseLayout>
 
 {edit && (
-  <script is:inline define:vars={{ locale, adminJsUrl: `${import.meta.env.BASE_URL}admin/admin.js?v=${Date.now()}`.replace(/([^:])\/\/+/g, '$1/') }}>
+  <script is:inline define:vars={{ locale, baseAdminUrl: `${import.meta.env.BASE_URL}admin/admin.js`.replace(/([^:])\/\/+/g, '$1/') }}>
     window.__ADMIN__ = { owner: 'xTitanxx', repo: 'TH-website', branch: 'main', locale };
     const s = document.createElement('script');
     s.type = 'module';
-    s.src = adminJsUrl;
+    // Cache-bust at runtime so a stale-HTML cache can't pin us to an old admin.js.
+    s.src = `${baseAdminUrl}?v=${Date.now()}`;
     document.head.appendChild(s);
   </script>
 )}
