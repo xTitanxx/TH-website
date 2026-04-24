@@ -5,7 +5,7 @@ images:
   - src: /images/uploads/1777043062287-6r5a5631-aurorahdr-edit.jpg
     alt: The old town and castle of Aljezur
     caption: The village
-  - src: /images/aljezur/beach.jpg
+  - src: /images/uploads/1777043346778-praia-do-monte-cle-rigo-i.jpg
     alt: A Costa Vicentina beach at low tide
     caption: The beaches
   - src: /images/aljezur/nature.jpg
