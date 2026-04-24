@@ -22,6 +22,8 @@ const mailHref = email ? `mailto:${email}` : '';
   method="POST"
   action={action || undefined}
   class="grid gap-4 max-w-prose"
+  id="contact-form"
+  novalidate
 >
   {!action && (
     <p class="text-xs rounded border border-amber-300 bg-amber-50 px-3 py-2 text-amber-900">
@@ -40,17 +42,25 @@ const mailHref = email ? `mailto:${email}` : '';
            class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
   </label>
 
-  <div class="grid gap-4 sm:grid-cols-2">
-    <label class="grid gap-1 text-sm">
-      <span>{s.contact.email}</span>
-      <input type="email" name="email" required autocomplete="email"
-             class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
-    </label>
-    <label class="grid gap-1 text-sm">
-      <span>{s.contact.phone}</span>
-      <input type="tel" name="phone" autocomplete="tel"
-             class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
-    </label>
+  <div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="grid gap-1 text-sm">
+        <span>{s.contact.email}</span>
+        <input type="email" name="email" autocomplete="email"
+               class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+      </label>
+      <label class="grid gap-1 text-sm">
+        <span>{s.contact.phone}</span>
+        <input type="tel" name="phone" autocomplete="tel"
+               class="rounded border border-[color:var(--color-sand-300)] bg-white px-3 py-2" />
+      </label>
+    </div>
+    <p class="text-xs text-[color:var(--color-sand-700)] mt-2">
+      Please provide at least one — email or phone.
+    </p>
+    <p id="contact-contact-err" class="hidden text-xs text-red-700 mt-2" role="alert">
+      Please enter an email address or a phone number so we can reply.
+    </p>
   </div>
 
   <label class="grid gap-1 text-sm">
@@ -88,3 +98,28 @@ const mailHref = email ? `mailto:${email}` : '';
     )}
   </div>
 </form>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    const err = document.getElementById('contact-contact-err');
+    form.addEventListener('submit', (e) => {
+      // Browser-side required checks (name, message, email format) run first.
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        e.preventDefault();
+        return;
+      }
+      const email = /** @type {HTMLInputElement} */ (form.email).value.trim();
+      const phone = /** @type {HTMLInputElement} */ (form.phone).value.trim();
+      if (!email && !phone) {
+        e.preventDefault();
+        err?.classList.remove('hidden');
+        /** @type {HTMLInputElement} */ (form.email).focus();
+      } else {
+        err?.classList.add('hidden');
+      }
+    });
+  })();
+</script>
