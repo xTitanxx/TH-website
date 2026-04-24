@@ -158,12 +158,31 @@ function stringifyFrontmatter(data, body) {
 // Commit pipeline
 // ---------------------------------------------------------------------------
 
+// Per-file queue: all commitUpdate calls to the same filePath run serially.
+// Different files still run in parallel. This prevents the client-side race
+// where two parallel handlers both getFile → both putFile against the same
+// pre-state sha and GitHub 409s the loser.
+const fileLocks = new Map();
+
+function commitUpdate(filePath, updates, msgField) {
+  const prev = fileLocks.get(filePath) ?? Promise.resolve();
+  // If the previous update rejected, don't let that poison the queue — run
+  // our attempt either way.
+  const next = prev.then(
+    () => commitUpdateImpl(filePath, updates, msgField),
+    () => commitUpdateImpl(filePath, updates, msgField),
+  );
+  fileLocks.set(filePath, next.catch(() => {}));
+  return next;
+}
+
 // Re-reads the file on every attempt so we always put against the latest sha.
-// Two rapid edits to the same section will race; the loser gets a 409 and
-// retries against the winner's state, re-applying only its own update paths.
-async function commitUpdate(filePath, updates, msgField) {
+// Retries on 409 with exponential backoff — the window needs to outlast
+// GitHub's Contents API replica lag (typically 5–15 s) because reads after
+// a successful write can briefly see stale state.
+async function commitUpdateImpl(filePath, updates, msgField) {
   setStatus('saving…');
-  const maxAttempts = 5;
+  const maxAttempts = 6;
   let lastErr;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -184,7 +203,8 @@ async function commitUpdate(filePath, updates, msgField) {
       const msg = String(e.message ?? e);
       if (msg.includes('409') && attempt < maxAttempts) {
         setStatus(`retrying (conflict, attempt ${attempt + 1})…`);
-        await new Promise((r) => setTimeout(r, 250 * attempt + Math.random() * 200));
+        const backoff = 600 * Math.pow(2, attempt - 1) + Math.random() * 400;
+        await new Promise((r) => setTimeout(r, backoff));
         continue;
       }
       break;
