@@ -275,13 +275,17 @@ function wireTextFields() {
   document.querySelectorAll('[data-editable="text"]').forEach((el) => {
     el.setAttribute('contenteditable', 'plaintext-only');
     el.spellcheck = false;
+    // Preserve line breaks the user types (Enter inserts a real newline).
+    el.style.whiteSpace = 'pre-line';
     el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el.blur(); }
+      // Escape cancels; Cmd/Ctrl+Enter saves early. Plain Enter inserts a line break.
       if (e.key === 'Escape') { el.textContent = el.dataset.original ?? ''; el.blur(); }
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); el.blur(); }
     });
     el.addEventListener('blur', async () => {
       const orig = el.dataset.original ?? '';
-      const next = (el.textContent ?? '').trim();
+      // Trim leading/trailing whitespace but preserve interior newlines.
+      const next = (el.textContent ?? '').replace(/^\s+|\s+$/g, '');
       if (next === orig) return;
       try {
         await commitUpdate(el.dataset.file, [{ kind: 'data', path: el.dataset.field, value: next }], el.dataset.field);

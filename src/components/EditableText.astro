@@ -13,12 +13,12 @@ const Tag = as as any;
 
 {edit ? (
   <Tag
-    class:list={['editable-text relative inline-block', className]}
+    class:list={['editable-text relative inline-block whitespace-pre-line', className]}
     data-editable="text"
     data-file={file}
     data-field={field}
     data-original={value}
   >{value}</Tag>
 ) : (
-  <Tag class={className}>{value}</Tag>
+  <Tag class:list={['whitespace-pre-line', className]}>{value}</Tag>
 )}
