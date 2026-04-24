@@ -12,6 +12,8 @@ images:
     alt: Studio Indigo — bathroom with sliding door
 ---
 
-A self-contained ground-floor studio, freshly renovated. One room — bed, small kitchen, bathroom behind a sliding door. Step-free from the street: no stairs to negotiate, no thresholds.
+This is a self-contained, newly renovated studio designed with comfort and simplicity in mind. The space is open-plan, with a double bed, a small kitchen and dining area, and a comfortable, large bathroom with a shower. You can walk straight in from the street — there are no stairs or thresholds to navigate.
 
-Designed for one or two people. A week, a month, a winter. A quiet working retreat or simply a way to slow down. Same materials, same eye, same textiles as upstairs — in a smaller frame.
+It’s ideal for one or two guests, whether you’re staying for a week, a month, or a longer stretch. It works equally well as a place to focus and work, or simply as somewhere to slow down and unwind.
+
+The studio has been finished with the same care, materials, and textiles as the main house upstairs — just in a more compact, intimate space. It can be cooled or heated (via air conditioning). 
