@@ -195,7 +195,9 @@ function galleryProps(file: string, images: any[] | undefined) {
                 <p class="max-w-prose whitespace-pre-line" set:html={mdLite(ch.body)} />
               </div>
               <figure class="overflow-hidden rounded">
-                <PlaceholderImage src={ch.image!} alt={ch.alt ?? ''} aspect="4/3" />
+                <EditableImage edit={edit} file={aljezur.file}
+                  field={`chapters.${i}.image`} altField={`chapters.${i}.alt`}
+                  src={ch.image!} alt={ch.alt ?? ''} aspect="4/3" />
               </figure>
             </div>
           );
