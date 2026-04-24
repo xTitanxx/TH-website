@@ -55,6 +55,10 @@ async function gh(path, init = {}) {
   const pat = getPAT();
   if (!pat) throw new Error('not signed in');
   const res = await fetch(`https://api.github.com${path}`, {
+    // Bypass the browser's HTTP cache. The Contents API responds with
+    // Cache-Control: private, max-age=60, which made rapid-fire saves
+    // read a stale sha on every retry and 409 forever.
+    cache: 'no-store',
     ...init,
     headers: {
       Accept: 'application/vnd.github+json',
