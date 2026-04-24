@@ -11,7 +11,7 @@ images:
   - src: /images/aljezur/nature.jpg
     alt: Wildflowers on the Rota Vicentina
     caption: Nature
-  - src: /images/aljezur/lagos.jpg
+  - src: /images/uploads/1777043268783-20160619-8729.jpg
     alt: Evening light on Lagos harbour
     caption: Further afield
 ---
