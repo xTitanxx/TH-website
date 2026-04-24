@@ -93,37 +93,63 @@ function galleryProps(file: string, images: any[] | undefined) {
     const cols = [2, 3, 2, 3, 4] as const;
     const aspects = ['16/10', '4/5', '4/3', '1/1', '4/3'];
     const Body = [HouseBody, CasaBody, StudioBody, ShopBody, AljezurBody][idx];
+    const images = sec.data.images ?? [];
+    const featured = images[0];
+    const rest = images.slice(1);
+    // Alternate image side: odd-indexed sections put image on the left, so
+    // scrolling the page doesn't feel like a single rigid column.
+    const imageLeft = idx % 2 === 1;
     return (
       <Section id={ids[idx]} tone={tones[idx]}
         title={undefined} eyebrow={undefined}>
-        <div class="mb-8 md:mb-12 max-w-2xl -mt-6">
-          {sec.data.eyebrow && (
-            <EditableText edit={edit} file={sec.file} field="eyebrow" as="p" value={sec.data.eyebrow}
-              class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+        <div class:list={[
+          '-mt-6',
+          featured && 'grid gap-10 md:gap-14 md:grid-cols-2 md:items-start',
+        ]}>
+          <div class:list={[imageLeft && 'md:order-2']}>
+            <div class="mb-8 md:mb-12">
+              {sec.data.eyebrow && (
+                <EditableText edit={edit} file={sec.file} field="eyebrow" as="p" value={sec.data.eyebrow}
+                  class="text-xs uppercase tracking-[0.18em] text-[color:var(--color-indigo-500)] mb-3 block" />
+              )}
+              <EditableText edit={edit} file={sec.file} field="title" as="h2" value={sec.data.title}
+                class="section-title text-[color:var(--color-sand-900)]" />
+            </div>
+            <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="max-w-prose">
+              <Body />
+            </EditableMarkdown>
+          </div>
+          {featured && (
+            <figure class="overflow-hidden rounded">
+              <EditableImage edit={edit} file={sec.file}
+                field="images.0.src" altField="images.0.alt"
+                src={featured.src} alt={featured.alt} aspect={aspects[idx]} />
+              {featured.caption && (
+                <figcaption class="mt-2 text-xs text-[color:var(--color-sand-700)]">{featured.caption}</figcaption>
+              )}
+            </figure>
           )}
-          <EditableText edit={edit} file={sec.file} field="title" as="h2" value={sec.data.title}
-            class="section-title text-[color:var(--color-sand-900)]" />
         </div>
-        <EditableMarkdown edit={edit} file={sec.file} raw={sec.body} class="max-w-prose">
-          <Body />
-        </EditableMarkdown>
-        {sec.data.images && sec.data.images.length > 0 && (
+        {rest.length > 0 && (
           <div class:list={[
-            'grid gap-3 mt-10',
+            'grid gap-3 mt-10 md:mt-14',
             cols[idx] === 2 ? 'grid-cols-1 sm:grid-cols-2' :
             cols[idx] === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' :
             'grid-cols-2 lg:grid-cols-4',
           ]}>
-            {sec.data.images.map((img, i) => (
-              <figure class="overflow-hidden rounded">
-                <EditableImage edit={edit} file={sec.file}
-                  field={`images.${i}.src`} altField={`images.${i}.alt`}
-                  src={img.src} alt={img.alt} aspect={aspects[idx]} />
-                {img.caption && (
-                  <figcaption class="mt-2 text-xs text-[color:var(--color-sand-700)]">{img.caption}</figcaption>
-                )}
-              </figure>
-            ))}
+            {rest.map((img, i) => {
+              const realIdx = i + 1;
+              return (
+                <figure class="overflow-hidden rounded">
+                  <EditableImage edit={edit} file={sec.file}
+                    field={`images.${realIdx}.src`} altField={`images.${realIdx}.alt`}
+                    src={img.src} alt={img.alt} aspect={aspects[idx]} />
+                  {img.caption && (
+                    <figcaption class="mt-2 text-xs text-[color:var(--color-sand-700)]">{img.caption}</figcaption>
+                  )}
+                </figure>
+              );
+            })}
           </div>
         )}
       </Section>
