@@ -154,25 +154,41 @@ function stringifyFrontmatter(data, body) {
 // Commit pipeline
 // ---------------------------------------------------------------------------
 
+// Re-reads the file on every attempt so we always put against the latest sha.
+// Two rapid edits to the same section will race; the loser gets a 409 and
+// retries against the winner's state, re-applying only its own update paths.
 async function commitUpdate(filePath, updates, msgField) {
   setStatus('saving…');
-  try {
-    const { sha, content } = await getFile(filePath);
-    const { data, body } = parseFrontmatter(content);
-    let newBody = body;
-    for (const u of updates) {
-      if (u.kind === 'data') setAtPath(data, u.path, u.value);
-      else newBody = u.value;
+  const maxAttempts = 5;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const { sha, content } = await getFile(filePath);
+      const { data, body } = parseFrontmatter(content);
+      let newBody = body;
+      for (const u of updates) {
+        if (u.kind === 'data') setAtPath(data, u.path, u.value);
+        else newBody = u.value;
+      }
+      const out = stringifyFrontmatter(data, newBody);
+      await putFile(filePath, out, sha, `admin: update ${msgField} in ${filePath.split('/').pop()}`);
+      setStatus('saved ✓');
+      toast('Saved — live in ~1 minute', 'ok');
+      return;
+    } catch (e) {
+      lastErr = e;
+      const msg = String(e.message ?? e);
+      if (msg.includes('409') && attempt < maxAttempts) {
+        setStatus(`retrying (conflict, attempt ${attempt + 1})…`);
+        await new Promise((r) => setTimeout(r, 250 * attempt + Math.random() * 200));
+        continue;
+      }
+      break;
     }
-    const out = stringifyFrontmatter(data, newBody);
-    await putFile(filePath, out, sha, `admin: update ${msgField} in ${filePath.split('/').pop()}`);
-    setStatus('saved ✓');
-    toast('Saved — live in ~1 minute', 'ok');
-  } catch (e) {
-    setStatus('save failed');
-    toast(`Save failed: ${e.message ?? e}`, 'error', 7000);
-    throw e;
   }
+  setStatus('save failed');
+  toast(`Save failed: ${lastErr?.message ?? lastErr}`, 'error', 7000);
+  throw lastErr;
 }
 
 // ---------------------------------------------------------------------------
