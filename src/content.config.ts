@@ -18,6 +18,19 @@ const sections = defineCollection({
       .optional(),
     gmaps: z.string().url().optional(),
     amaps: z.string().url().optional(),
+    // Used by the Aljezur section: each chapter renders as its own row with
+    // optional image alongside the text. Falls back to body + images grid for
+    // sections that don't set this.
+    chapters: z
+      .array(
+        z.object({
+          heading: z.string(),
+          body: z.string(),
+          image: z.string().optional(),
+          alt: z.string().default(''),
+        }),
+      )
+      .optional(),
   }),
 });
 
