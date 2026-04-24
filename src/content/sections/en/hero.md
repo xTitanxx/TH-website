@@ -1,5 +1,5 @@
 ---
-title: A townhouse. Two quiet spaces. One quiet street.
+title: One townhouse. Two charming spaces.
 eyebrow: Aljezur · Costa Vicentina
 tagline: >-
   A three-storey townhouse on a pedestrianised street in Aljezur, on the edge of the Costa Vicentina. Casa Indigo
