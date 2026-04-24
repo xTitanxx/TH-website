@@ -8,7 +8,7 @@ images:
   - src: /images/uploads/1777043346778-praia-do-monte-cle-rigo-i.jpg
     alt: A Costa Vicentina beach at low tide
     caption: The beaches
-  - src: /images/aljezur/nature.jpg
+  - src: /images/uploads/1777043349773-aljezur.jpg
     alt: Wildflowers on the Rota Vicentina
     caption: Nature
   - src: /images/uploads/1777043268783-20160619-8729.jpg
