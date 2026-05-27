@@ -2,7 +2,7 @@
 title: Studio Indigo
 eyebrow: Ground floor · step-free · sleeps two
 images:
-  - src: /images/uploads/1777040596573-img-1173.jpg
+  - src: /images/uploads/1779893713033-img-7434.jpg
     alt: Studio Indigo — the main room
   - src: /images/uploads/1777042145261-img-1166.jpg
     alt: Studio Indigo — kitchenette
