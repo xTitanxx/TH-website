@@ -14,7 +14,7 @@ images:
     alt: Casa Indigo — bathroom
   - src: /images/uploads/1777042977990-6r5a5598.jpg
     alt: Casa Indigo — second living space
-  - src: /images/casa-indigo/07-placeholder.jpg
+  - src: /images/uploads/1780927056023-img-7434.jpg
     alt: ""
 ---
 
